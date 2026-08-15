@@ -5,10 +5,10 @@
 // 注入脚本:右上角余额卡片。注入必须用切片拼接(injectScript)。
 
 import { PEAK_UTC, USD_CNY, modeAt, nextBoundary } from './pricing'
-import { usage24h, sessionSource, type SessionQuery } from './usage'
+import { usage24h, sessionSource, usageByModel, type SessionQuery } from './usage'
 import { CARD_SCRIPT } from './scripts'
 import { inject, injectScript, type Ctx, type Credentials, type Shell, type WebRoute, type WebServer, type AgentsService, type SessionProjections } from './types'
-import { __resetCaches, sourceCache, cacheState } from './caches'
+import { __resetCaches, sourceCache, byModelCache, cacheState } from './caches'
 import { createBalance } from './balance'
 import { createActivity } from './activity'
 
@@ -45,6 +45,16 @@ export function apply(ctx: Ctx): void {
     if (hit !== undefined && Date.now() - hit.at < 60000) return hit.data
     const data = await sessionSource(sessionQuery, sessionId)
     sourceCache.set(sessionId, { at: Date.now(), data }) // 负缓存:null 也缓存
+    return data
+  }
+
+  // 按 model 分桶用量(读会话重,60s 缓存)
+  async function cachedByModel(sessionId: string): Promise<unknown> {
+    if (!sessionQuery) return null
+    const hit = byModelCache.get(sessionId)
+    if (hit !== undefined && Date.now() - hit.at < 60000) return hit.data
+    const data = await usageByModel(sessionQuery, sessionId)
+    if (data !== null) byModelCache.set(sessionId, { at: Date.now(), data })
     return data
   }
 
@@ -93,6 +103,7 @@ export function apply(ctx: Ctx): void {
           source: sessionId ? await cachedSessionSource(sessionId) : null,
           activity: sessionId ? await activityFor(sessionId) : null,
           prediction: sessionId ? await cachedPrediction(sessionId, modelParam) : null,
+          byModel: sessionId ? await cachedByModel(sessionId) : null,
         })
         res.statusCode = 200
         res.setHeader('Content-Type', 'application/json; charset=utf-8')

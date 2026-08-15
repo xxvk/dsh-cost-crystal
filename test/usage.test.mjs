@@ -1,7 +1,7 @@
 // 用量聚合测试:sessionCost / usage24h(带假 sessionQuery)
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { usage24h, sessionActivity } from '../lib/usage.js'
+import { usage24h, sessionActivity, usageByModel } from '../lib/usage.js'
 import { sessionCost, sessionCostWithSource } from '../lib/cost.js'
 import { predictNext } from '../lib/predict.js'
 
@@ -159,4 +159,31 @@ test('predictNext: 无 modelHint 时 fallback 历史最后一条 model', async (
   ]
   const r = await predictNext(fakeQuery([{ id: 's1', events }]), 's1')
   assert.equal(r.model, 'deepseek-v4-flash', '无 hint 时应回退历史模型')
+})
+
+test('usageByModel: 按 model 分桶累计 token/费用(deepseek vs VL)', async () => {
+  const events = [
+    { time: UTC(8), data: { usage: { inputTokens: 1000, outputTokens: 500 }, source: { model: 'deepseek-v4-flash' } } },
+    { time: UTC(8), data: { usage: { inputTokens: 200, outputTokens: 300 }, source: { model: 'deepseek-v4-flash' } } },
+    { time: UTC(8), data: { usage: { inputTokens: 50, outputTokens: 80 }, source: { model: 'aliyun/qwen3-vl-flash' } } },
+  ]
+  const r = await usageByModel(fakeQuery([{ id: 's1', events }]), 's1')
+  assert.ok(r, '应返回分桶')
+  assert.equal(r.length, 2, '两个模型各一桶')
+  const deep = r.find((b) => b.model === 'deepseek-v4-flash')
+  const vl = r.find((b) => b.model === 'aliyun/qwen3-vl-flash')
+  assert.ok(deep && vl, '两桶都应存在')
+  assert.equal(deep.calls, 2)
+  assert.equal(deep.input, 1200)
+  assert.equal(deep.output, 800)
+  assert.equal(vl.calls, 1)
+  assert.equal(vl.input, 50)
+  assert.equal(vl.output, 80)
+  assert.ok(deep.costCny > 0 && vl.costCny > 0, '两桶都应有费用')
+  assert.ok(r[0].costCny >= r[1].costCny, '按费用降序')
+})
+
+test('usageByModel: readSession 抛错返回 null', async () => {
+  const sq = { listSessions: async () => [], readSession: async () => { throw new Error('x') } }
+  assert.equal(await usageByModel(sq, 's1'), null)
 })

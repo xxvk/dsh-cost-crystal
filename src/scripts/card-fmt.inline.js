@@ -134,3 +134,12 @@
   }
 
   function fmtTps(n) { return String(Math.round(Number(n) || 0)); }
+
+  function shortModel(m) {
+    if (!m) return '?';
+    if (m === 'deepseek-v4-flash') return 'deepseek';
+    if (m === 'deepseek-v4-pro') return 'pro';
+    if (m.indexOf('qwen') !== -1) return 'qwen3-vl';
+    var seg = m.split('/');
+    return seg[seg.length - 1];
+  }

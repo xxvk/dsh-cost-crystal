@@ -2,14 +2,20 @@
 
 英文版见 [TODO.md](TODO.md)。
 
-## 发布待办 v0.1.0(手动项)
+## 发布 v0.1.0(已完成)
 
-- [ ] git commit + push(建议标题:`chore: 0.1.0 RC`)
-- [ ] `npm publish`(prepack 自动跑 build + 114 测试)
-- [ ] 干净安装验证:`dsh plugin --profile <临时名> add dsh-cost-crystal`,重启后确认卡片/费用/速率/预测正常
-- [ ] 实测:发一条消息,确认呼吸灯/品牌 shimmer **2s 内点亮**
-- [ ] 截图补进 README(发布页)
-- [ ] `v0.1.0` tag + GitHub release notes(明确要求时)
+- [x] git commit + push(`0.1.0 RC`)
+- [x] `npm publish`(dsh-cost-crystal@0.1.0)
+- [x] 截图补进 README(`docs/card.png`)
+- [x] `v0.1.0` tag + GitHub Release
+- [x] 社区收录:PR #639(awesome-dsh-plugin)+ #212(awesome-deepseek-harness)
+- [ ] 干净安装验证:`dsh plugin --profile <临时名> add dsh-cost-crystal`(需 dsh CLI)
+- [x] 实测:发一条消息,确认动画 **2s 内点亮**(已验证)
+
+### 发布管线(已配置)
+
+- **Trusted Publishing(OIDC)**:打 `v*` tag 后 GitHub Actions 自动 `npm publish`,无需 token(`.github/workflows/publish.yml`)
+- **手动兜底**:granular token `dsh-cost-crystal-publish`(bypass 2FA、all packages、90 天 → 2026-11-14 前重新生成)
 
 ## 暂停(已从 v0.1.0 移除)
 

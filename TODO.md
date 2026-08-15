@@ -2,14 +2,20 @@
 
 中文版见 [TODO_CN.md](TODO_CN.md)。
 
-## Release v0.1.0 (manual steps)
+## Release v0.1.0 (done)
 
-- [ ] git commit + push (suggested title: `chore: 0.1.0 RC`)
-- [ ] `npm publish` (prepack runs build + 114 tests automatically)
-- [ ] Clean install check: `dsh plugin --profile <temp> add dsh-cost-crystal`, restart, verify card/cost/rate/prediction
-- [ ] Live check: send a message, confirm breathing dot / shimmer light up **within 2s**
-- [ ] Add card screenshot to README (release page)
-- [ ] `v0.1.0` tag + GitHub release notes (only when explicitly requested)
+- [x] git commit + push (`0.1.0 RC`)
+- [x] `npm publish` (dsh-cost-crystal@0.1.0)
+- [x] Screenshot in README (`docs/card.png`)
+- [x] `v0.1.0` tag + GitHub Release
+- [x] Community listings: PR #639 (awesome-dsh-plugin) + #212 (awesome-deepseek-harness)
+- [ ] Clean install check: `dsh plugin --profile <temp> add dsh-cost-crystal` (needs dsh CLI)
+- [x] Live check: send a message, confirm animation lights up **within 2s** (verified)
+
+### Publish pipeline (configured)
+
+- **Trusted Publishing (OIDC)**: `npm publish` via GitHub Actions on `v*` tag — no token needed (`.github/workflows/publish.yml`)
+- **Manual fallback**: granular token `dsh-cost-crystal-publish` (bypass 2FA, all packages, 90d → re-create before 2026-11-14)
 
 ## Suspended (removed from v0.1.0)
 

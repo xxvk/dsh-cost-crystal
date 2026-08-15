@@ -97,6 +97,16 @@
       root.appendChild(period);
     }
     root.appendChild(makeEl('div', 'ds-balance-card__divider'));
+    if (data.byModel && data.byModel.length > 1) {
+      var pm = makeEl('div', 'ds-balance-card__models');
+      pm.textContent = data.byModel.map(function (b) {
+        return shortModel(b.model) + ' ' + fmtM(b.input + b.cacheRead + b.output) + ' · ' + fmtCost(b.costCny);
+      }).join('  ');
+      pm.title = data.byModel.map(function (b) {
+        return b.model + ': ' + fmtTokens(b.input + b.cacheRead + b.output) + ' tok · ¥' + b.costCny.toFixed(4) + '(' + b.calls + ' 次)';
+      }).join('\n');
+      root.appendChild(pm);
+    }
     var fc = makeEl('div', 'ds-balance-card__forecast');
     var p = data.prediction;
     if (p && p.totalTokens > 0) {

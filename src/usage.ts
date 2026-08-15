@@ -143,3 +143,50 @@ export async function sessionActivity(sq: SessionQuery, sessionId: string): Prom
 }
 
 
+
+export interface ModelUsageBucket {
+  model: string
+  input: number
+  cacheRead: number
+  output: number
+  calls: number
+  costCny: number
+  costUsd: number
+}
+
+/** 按 model 分桶的用量统计(deepseek vs VL 等),按费用降序。 */
+export async function usageByModel(sq: SessionQuery, sessionId: string): Promise<ModelUsageBucket[] | null> {
+  let snapshot: { events?: SessionEvent[] } | null = null
+  try {
+    snapshot = await sq.readSession(sessionId)
+  } catch {
+    return null
+  }
+  const now = Date.now()
+  const map = new Map<string, ModelUsageBucket>()
+  for (const ev of snapshot?.events ?? []) {
+    const u = ev.data?.usage
+    if (!u) continue
+    const t = u.inputTokens || 0
+    const h = u.cacheReadTokens || 0
+    const o = u.outputTokens || 0
+    if (t + h + o <= 0) continue
+    const model = modelOf(ev)
+    let b = map.get(model)
+    if (!b) {
+      b = { model, input: 0, cacheRead: 0, output: 0, calls: 0, costCny: 0, costUsd: 0 }
+      map.set(model, b)
+    }
+    b.input += t
+    b.cacheRead += h
+    b.output += o
+    b.calls++
+    const unit = priceAt(model, typeof ev.time === 'number' ? ev.time : now)
+    const c = costOf(u, unit)
+    b.costCny += c.cost
+    b.costUsd += c.costUsd
+  }
+  const out = [...map.values()]
+  out.sort((a, b) => b.costCny - a.costCny)
+  return out
+}

@@ -3,6 +3,7 @@
 export const predictionCache = new Map<string, { at: number; data: unknown; model: string | null }>()
 export const sourceCache = new Map<string, { at: number; data: unknown }>()
 export const activityCache = new Map<string, { at: number; data: unknown }>()
+export const byModelCache = new Map<string, { at: number; data: unknown }>()
 
 // 可变状态(对象包装,避免 ES module import 只读绑定不可重赋值)
 export const cacheState = {
@@ -19,6 +20,7 @@ export function __resetCaches(): void {
   predictionCache.clear()
   sourceCache.clear()
   activityCache.clear()
+  byModelCache.clear()
   cacheState.globalTpsState = null
   cacheState.balanceCache = { at: 0, data: null }
   cacheState.usage24hCache = { at: 0, data: null }
