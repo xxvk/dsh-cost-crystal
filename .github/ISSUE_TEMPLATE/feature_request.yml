@@ -1,0 +1,43 @@
+name: Feature request
+description: Propose a focused cost or usage feature for the plugin.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the user need and why the current plugin does not cover it.
+    validations:
+      required: true
+  - type: textarea
+    id: feature
+    attributes:
+      label: Proposed feature
+      description: Include expected inputs, output, and which component it touches.
+    validations:
+      required: true
+  - type: dropdown
+    id: data
+    attributes:
+      label: Does this feature read or expose sensitive data?
+      options:
+        - No, uses only aggregate/local-log estimates
+        - Yes, needs balance, usage, or other Host data
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria and failure cases
+    validations:
+      required: true
+  - type: checkboxes
+    id: conduct
+    attributes:
+      label: Project boundaries
+      options:
+        - label: This request does not automate spam, fabricate engagement, or infer visitor identity.
+          required: true

@@ -1,0 +1,62 @@
+name: Bug report
+description: Report reproducible incorrect behavior in the cost-crystal plugin.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Do not include API keys, balance figures, usage data, or private repository data.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Package version or Git tag (e.g. `v0.1.0`).
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of the plugin is misbehaving?
+      options:
+        - Balance card
+        - Real-time rate
+        - Peak/off-peak billing
+        - Next-message cost forecast
+        - Installation / bundle patch
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and sanitized output
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Node.js version, DeepSeek Harness version, and browser.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed credentials and private usage data from this report.
+          required: true
