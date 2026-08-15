@@ -43,6 +43,12 @@ Then restart `dsh web` and hard-refresh the browser. The package declares `dsh.b
 - Spend/cost covers **local Harness sessions only**; display conversion uses a fixed rate of 7.1.
 - ⚠️ All spend/cost figures are **local-log estimates** and may differ from the official bill.
 
+## VL models (multi-model stats)
+
+dsh-cost-crystal buckets usage **per model** automatically from session logs, so mixed DeepSeek + vision-language (VL) usage shows side by side on the card. When more than one model is present, a summary line (`deepseek 12.5M · ¥36.6  qwen3-vl 1.2M · ¥3.2`) appears, and the **▼ button** next to the source label cycles through your configured models.
+
+To use a VL model (e.g. Alibaba qwen3-vl-flash), configure it as a DSH provider — for example via the [dsh-vision-router](https://github.com/ysr666/dsh-vision-router) plugin (provider `vision-http`, model `aliyun/qwen3-vl-flash`, `DASHSCOPE_API_KEY` in `~/.dsh/.credentials.yaml`). dsh-cost-crystal needs no extra config: it reads whatever models the session log records.
+
 ## Roadmap
 
 - v0.1.0 (now): balance card + real-time rate + peak/off-peak + countdown + 24h spend + 🔮 next-message forecast

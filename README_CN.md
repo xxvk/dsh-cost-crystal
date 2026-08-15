@@ -74,6 +74,12 @@ npm test    # = tsc 构建 + node --test(全部测试)+ check-lines 行数规则
   插件 apply/路由(mock 服务)、活动增量检测、发布一致性(patch inject 与代码同步)
 - 行数规则:源码与测试 ≤300 行(推荐)/ 400 行(硬上限);生成物 `lib/` 豁免。详见 [CONTRIBUTING.md](CONTRIBUTING.md)
 
+## VL 模型(多模型统计)
+
+dsh-cost-crystal 自动从会话日志**按 model 分桶**统计用量,DeepSeek 与 VL(视觉语言)模型的消耗会并排显示在卡片上。存在多个模型时,卡片出现摘要行(`deepseek 12.5M · ¥36.6  qwen3-vl 1.2M · ¥3.2`),来源标签旁的 **▼ 按钮**在已配置模型间循环切换。
+
+接入 VL 模型(如阿里云 qwen3-vl-flash):把它配置为 DSH provider —— 例如通过 [dsh-vision-router](https://github.com/ysr666/dsh-vision-router) 插件(provider `vision-http`、model `aliyun/qwen3-vl-flash`、`DASHSCOPE_API_KEY` 写在 `~/.dsh/.credentials.yaml`)。dsh-cost-crystal 无需额外配置,自动统计会话日志里出现的任何模型。
+
 ## 路线图 / Roadmap
 
 - v0.1.0(当前):余额卡片 + 波峰/低峰 + 倒计时 + 24h + 会话费用 + 实时速率 + 下一条预测(预览)
