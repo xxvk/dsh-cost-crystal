@@ -143,3 +143,16 @@
     var seg = m.split('/');
     return seg[seg.length - 1];
   }
+
+  function modelSwitchNext(current, groups) {
+    var all = [];
+    (groups || []).forEach(function (g) {
+      (g.models || []).forEach(function (m) { all.push({ provider: g.id, model: m.id }); });
+    });
+    if (!all.length) return null;
+    var idx = -1;
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].provider === current.provider && all[i].model === current.model) { idx = i; break; }
+    }
+    return all[(idx + 1) % all.length];
+  }

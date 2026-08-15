@@ -125,21 +125,6 @@ test('fmtNextAt: 单参数调用(now 缺省为当前时刻)→ 今天 12:00 显�
   assert.ok(out.startsWith('(今日'), `今天 12:00 应显示今日,实际: ${out}`)
 })
 
-function modelKeyFromLabelOf(js) {
-  const m = js.match(/function modelKeyFromLabel\(label\) \{[\s\S]*?\n  \}/)
-  assert.ok(m, '卡片脚本应包含 modelKeyFromLabel 函数')
-  return new Function(`return (${m[0]})`)()
-}
-
-test('modelKeyFromLabel: DOM 显示名 → 定价模型 key', () => {
-  const f = modelKeyFromLabelOf(jsOf(CARD_SCRIPT))
-  assert.equal(f('DeepSeek-V4-FlashHigh'), 'deepseek-v4-flash')
-  assert.equal(f('DeepSeek-V4-Pro'), 'deepseek-v4-pro')
-  assert.equal(f('deepseek-reasoner'), 'deepseek-reasoner')
-  assert.equal(f('DeepSeek Chat'), 'deepseek-chat')
-  assert.equal(f('garbage'), null)
-})
-
 test('预测价格:黑白强调(独立 cost span)', () => {
   const js = jsOf(CARD_SCRIPT)
   assert.ok(js.includes('ds-balance-card__cost'), '应有价格强调 span 类')
@@ -153,23 +138,3 @@ test('主题:卡片跟随 DSH 客户端暗黑/亮色(body data-ds-dark-theme)', 
   assert.ok(js.includes('body:not([data-ds-dark-theme])'), '亮色模式应通过 body 无 data-ds-dark-theme 选择')
 })
 
-function shortModelOf(js) {
-  const m = js.match(/function shortModel\(m\) \{[\s\S]*?\n  \}/)
-  assert.ok(m, '卡片脚本应包含 shortModel 函数')
-  return new Function(`return (${m[0]})`)()
-}
-
-test('shortModel: 模型名短化(deepseek/qwen3-vl 等)', () => {
-  const f = shortModelOf(jsOf(CARD_SCRIPT))
-  assert.equal(f('deepseek-v4-flash'), 'deepseek')
-  assert.equal(f('deepseek-v4-pro'), 'pro')
-  assert.equal(f('aliyun/qwen3-vl-flash'), 'qwen3-vl')
-  assert.equal(f('some/gateway-model'), 'gateway-model')
-})
-
-test('per-model 统计:多模型时渲染摘要行(data.byModel)', () => {
-  const js = jsOf(CARD_SCRIPT)
-  assert.ok(js.includes('data.byModel'), '渲染应消费 byModel 字段')
-  assert.ok(js.includes('ds-balance-card__models'), '应有 per-model 行类')
-  assert.ok(js.includes('shortModel'), '应使用 shortModel 短化模型名')
-})

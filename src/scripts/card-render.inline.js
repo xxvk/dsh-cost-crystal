@@ -47,6 +47,10 @@
       src.title = '模型: ' + (data.source.model || '?');
       head.appendChild(src);
     }
+    var sw = makeEl('span', 'ds-balance-card__switch', '▼');
+    sw.title = '切换模型';
+    sw.onclick = modelSwitch;
+    head.appendChild(sw);
     if (data.activity) {
       var tpsOn = data.activity.active;
       var tpsNum = makeEl('span', 'ds-balance-card__tpsnum' + (tpsOn ? ' ds-balance-card__tpsnum--on' : ''), fmtTps(tpsValue(data.activity)));
@@ -119,4 +123,22 @@
       fc.title = '预测模块开发中(规划中)';
     }
     root.appendChild(fc);
+  }
+
+
+  function modelSwitch() {
+    var sid = currentSessionId();
+    if (!sid) return;
+    fetch('/api/session.models', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'client-request', rpcId: String(Date.now()), method: 'session.models', payload: { sessionId: sid } }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { return d && d.result && d.result.value; })
+      .then(function (v) {
+        if (!v || !v.current) return null;
+        var next = modelSwitchNext(v.current, v.groups || []);
+        if (!next) return null;
+        return fetch('/api/session.selectModel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'client-request', rpcId: String(Date.now()), method: 'session.selectModel', payload: { sessionId: sid, provider: next.provider, model: next.model } }) });
+      })
+      .then(function (r) { if (r) return r.json(); })
+      .then(function (d) { if (d && d.result && d.result.ok !== false) poll(); })
+      .catch(function () {});
   }

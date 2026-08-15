@@ -39,6 +39,10 @@
 - [ ] 模型切换费用对比(同一请求跨模型)
 - [ ] 预测的长上下文截断窗口
 
+## 文档(延迟到 v0.2.0 发布)
+
+- [ ] `docs/social-card*.md`(英/中/日宣传卡)保持未跟踪;0.2.0 发布时决定处理方式
+
 ## 工程待办(长期)
 
 - [ ] 本地 profile 迁移到 `dsh plugin --profile web add` 单包管理(移除 ds-balance-vN / ds-session-cost-vN 手管行)

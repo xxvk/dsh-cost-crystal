@@ -39,6 +39,10 @@ Personal need: user also uses paid VL models (e.g. Alibaba qwen VL).
 - [ ] Model switch cost comparison (same request across models)
 - [ ] Long-context truncation window for prediction
 
+## Docs (deferred to v0.2.0 release)
+
+- [ ] `docs/social-card*.md` (EN/CN/JP marketing cards) kept untracked; decide at v0.2.0 release
+
 ## Engineering (long-term)
 
 - [ ] Migrate local profile to `dsh plugin --profile web add` single-package management (drop hand-managed ds-balance-vN / ds-session-cost-vN rows)
