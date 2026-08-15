@@ -4,6 +4,8 @@ A cost & usage crystal ball for the DeepSeek Harness web GUI — balance, real-t
 
 中文说明见 [README_CN.md](README_CN.md)。
 
+![CI](https://github.com/xxvk/dsh-cost-crystal/actions/workflows/test.yml/badge.svg)
+
 ## Screenshot
 
 ![dsh-cost-crystal balance card](docs/card.png)

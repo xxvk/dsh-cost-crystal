@@ -4,6 +4,8 @@ DeepSeek Harness(`dsh web`) 的成本水晶球:余额、实时速率、波峰/�
 
 English: *A cost & usage crystal ball for the DeepSeek Harness web GUI — balance, real-time rate, peak/off-peak billing, and a 🔮 next-message cost forecast, all timezone-aware.*
 
+![CI](https://github.com/xxvk/dsh-cost-crystal/actions/workflows/test.yml/badge.svg)
+
 ## 功能 / Features
 
 - **🔮 下一条消息消耗预测**:基于当前对话上下文与历史用量,预估下一条消息的 token 消耗与费用;切换模型即时重新计价
