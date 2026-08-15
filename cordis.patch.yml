@@ -1,0 +1,6 @@
+# dsh-cost-crystal 的 bundle 层:随 `dsh plugin --profile web add dsh-cost-crystal`
+# 安装后自动挂载(loader 从 profile 的 node_modules 按包名解析 `name`)。
+- insert:
+    - id: cost-crystal
+      name: 'dsh-cost-crystal'
+      inject: [credentials, shell, webServer, sessionQuery, agents, sessionProjections]

@@ -1,36 +1,28 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# 依赖
 /node_modules
-/.pnp
-.pnp.js
 
-# testing
+# 构建产物(tsc 输出;npm 发布时 prepack 自动重建,不进 git)
+/lib
+
+# 测试
 /coverage
 
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# npm 打包产物
+*.tgz
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
-# local env files
-.env*.local
-.env
+# 系统 / IDE
+.DS_Store
+.idea/
+.vscode/
 
-# vercel
-.vercel
-
-# typescript
+# TypeScript
 *.tsbuildinfo
-next-env.d.ts
+
+# 本地环境
+.env
+.env*.local
+
+# 竞品巡检(本地 iCloud 保留,远端不发布)
+/docs/reference-tracking.md
+/scripts/check-references.mjs
