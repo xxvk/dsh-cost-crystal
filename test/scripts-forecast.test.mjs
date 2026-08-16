@@ -90,11 +90,11 @@ test('布局:近24h 消耗靠右对齐(usage margin-left:auto)', () => {
   assert.match(t[0], /margin-left:\s*auto/, '近24h 应靠右对齐')
 })
 
-test('布局:波峰/低峰与倒计时相对居中(period justify-content:center)', () => {
+test('布局:波峰/低峰与倒计时左对齐(period justify-content:flex-start)', () => {
   const js = jsOf(CARD_SCRIPT)
   const t = js.match(/\.ds-balance-card__period\{[^}]*\}/)
   assert.ok(t, '应有 period 样式')
-  assert.match(t[0], /justify-content:\s*center/, 'period 行应居中')
+  assert.match(t[0], /justify-content:\s*flex-start/, 'period 行应左对齐')
 })
 
 function fmtNextAtOf(js) {

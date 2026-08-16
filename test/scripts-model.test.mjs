@@ -44,31 +44,77 @@ test('per-model 统计:多模型时渲染摘要行(data.byModel)', () => {
   assert.ok(js.includes('shortModel'), '应使用 shortModel 短化模型名')
 })
 
-function modelSwitchNextOf(js) {
-  const m = js.match(/function modelSwitchNext\(current, groups\) \{[\s\S]*?\n  \}/)
-  assert.ok(m, '卡片脚本应包含 modelSwitchNext 函数')
-  return new Function(`return (${m[0]})`)()
+function originClassOf(js) {
+  const m = js.match(/function originClass\(sel\) \{[\s\S]*?\n  \}/)
+  assert.ok(m, '卡片脚本应包含 originClass 函数')
+  return m[0]
+}
+function modelOptionsOf(js) {
+  const m = js.match(/function modelOptions\([^)]*\) \{[\s\S]*?\n  \}/)
+  assert.ok(m, '卡片脚本应包含 modelOptions 函数')
+  return new Function(originClassOf(js) + '; return (' + m[0] + ')')()
 }
 
-test('modelSwitchNext: 展平 groups 循环切换(deepseek→VL→回到第一个)', () => {
-  const f = modelSwitchNextOf(jsOf(CARD_SCRIPT))
+test('modelOptions: groups → 只保留 deepseek 官方/qwen 两类,每类一项', () => {
+  const f = modelOptionsOf(jsOf(CARD_SCRIPT))
+  const groups = [
+    { id: 'deepseek-official', models: [{ id: 'deepseek-v4-flash' }, { id: 'deepseek-v4-pro' }] },
+    { id: 'vision-http', models: [{ id: 'aliyun/qwen3-vl-flash' }] },
+    { id: 'nous-portal', models: [{ id: 'nous/hermes' }] },
+  ]
+  assert.deepEqual(f(groups), [
+    { provider: 'deepseek-official', model: 'deepseek-v4-flash', cls: 'deepseek' },
+    { provider: 'vision-http', model: 'aliyun/qwen3-vl-flash', cls: 'qwen' },
+  ])
+  // 其它来源(polyglot 等)被过滤
+  assert.deepEqual(f([{ id: 'p', models: [{ id: 'm' }, { id: 'm' }] }]), [], '非 deepseek/qwen 来源应被过滤')
+  assert.deepEqual(f([]), [], '空目录返回空数组')
+  assert.deepEqual(f(undefined), [], '未定义目录返回空数组')
+})
+
+test('modelOptions: current 命中某类时保留当前模型(不降级)', () => {
+  const f = modelOptionsOf(jsOf(CARD_SCRIPT))
   const groups = [
     { id: 'deepseek-official', models: [{ id: 'deepseek-v4-flash' }, { id: 'deepseek-v4-pro' }] },
     { id: 'vision-http', models: [{ id: 'aliyun/qwen3-vl-flash' }] },
   ]
-  const next1 = f({ provider: 'deepseek-official', model: 'deepseek-v4-flash' }, groups)
-  assert.deepEqual(next1, { provider: 'deepseek-official', model: 'deepseek-v4-pro' })
-  const next2 = f({ provider: 'deepseek-official', model: 'deepseek-v4-pro' }, groups)
-  assert.deepEqual(next2, { provider: 'vision-http', model: 'aliyun/qwen3-vl-flash' })
-  const next3 = f({ provider: 'vision-http', model: 'aliyun/qwen3-vl-flash' }, groups)
-  assert.deepEqual(next3, { provider: 'deepseek-official', model: 'deepseek-v4-flash' }, '循环回到第一个')
-  assert.equal(f({ provider: 'x', model: 'y' }, []), null, '空目录返回 null')
+  assert.deepEqual(f(groups, { provider: 'deepseek-official', model: 'deepseek-v4-pro' }), [
+    { provider: 'deepseek-official', model: 'deepseek-v4-pro', cls: 'deepseek' },
+    { provider: 'vision-http', model: 'aliyun/qwen3-vl-flash', cls: 'qwen' },
+  ])
+  // current 是 qwen 时,qwen 选项用 current 模型
+  assert.deepEqual(f(groups, { provider: 'vision-http', model: 'aliyun/qwen3-vl-flash' }), [
+    { provider: 'deepseek-official', model: 'deepseek-v4-flash', cls: 'deepseek' },
+    { provider: 'vision-http', model: 'aliyun/qwen3-vl-flash', cls: 'qwen' },
+  ])
 })
 
-test('模型切换:脚本含 session.models/selectModel RPC 与切换按钮', () => {
+test('originClass: 来源归类(deepseek 官方/qwen/其它)', () => {
+  const oc = new Function(`return (${originClassOf(jsOf(CARD_SCRIPT))})`)()
+  assert.equal(oc({ provider: 'deepseek-official', model: 'deepseek-v4-flash' }), 'deepseek')
+  assert.equal(oc({ provider: 'deepseek-official', model: 'deepseek-v4-pro' }), 'deepseek')
+  assert.equal(oc({ provider: 'vision-http', model: 'aliyun/qwen3-vl-flash' }), 'qwen')
+  assert.equal(oc({ provider: 'x', model: 'foo/bar' }), 'bar')
+})
+
+test('originLabel: 来源显示名(DeepSeek 官方 / Qwen 阿里云)', () => {
+  const js = jsOf(CARD_SCRIPT)
+  const m = js.match(/function originLabel\(cls\) \{[\s\S]*?\n  \}/)
+  assert.ok(m, '卡片脚本应包含 originLabel 函数')
+  const ol = new Function(`return (${m[0]})`)()
+  assert.equal(ol('deepseek'), 'DeepSeek 官方')
+  assert.equal(ol('qwen'), 'Qwen 阿里云')
+  assert.equal(ol('other'), 'other')
+})
+
+test('模型选择:脚本含下拉菜单与用户驱动的 session.models/selectModel RPC', () => {
   const js = jsOf(CARD_SCRIPT)
   assert.ok(js.includes("'session.models'"), '应调用 session.models 拉可用模型')
   assert.ok(js.includes("'session.selectModel'"), '应调用 session.selectModel 提交切换')
-  assert.ok(js.includes('ds-balance-card__switch'), '应有切换按钮类')
-  assert.ok(js.includes('modelSwitch'), '应有切换函数')
+  assert.ok(js.includes('ds-balance-card__switch'), '应有切换按钮(▼)类')
+  assert.ok(js.includes('ds-balance-card__menu'), '应有下拉菜单类')
+  assert.ok(js.includes('ds-balance-card__menuitem'), '应有菜单选项类')
+  assert.ok(js.includes('openModelMenu'), '应有点击▼打开菜单的函数')
+  assert.ok(js.includes('selectModel('), '应有用户选择后提交的函数')
+  assert.ok(!js.includes('modelSwitchNext'), '不应再有自动循环切换 modelSwitchNext')
 })

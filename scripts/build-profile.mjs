@@ -2,21 +2,39 @@
 // 这是"改完源码 → 让本地 profile 生效"的唯一入口,避免手工同步 host 代码漂移。
 //
 // 用法:
-//   node scripts/build-profile.mjs             # 默认写入 ~/.dsh/profiles/web/plugins/ 并更新 patch 行
-//   node scripts/build-profile.mjs <outdir>    # 写入指定目录(测试用,不更新 patch 行)
+//   node scripts/build-profile.mjs [--profile <name>] [<outdir>]
+//   --profile <name>  目标 profile(默认 web,稳定版 0.1.0-rc.5;桌面版用 --profile desktop)
+//   <outdir>          写入指定目录(测试用,不更新 patch 行)
 //
 // 生成的文件是 require 包装器:每次加载先清除 lib/ 的 require.cache,保证
 // 改完源码重新 build 后,热加载拿到的是最新代码。
-import { readFileSync, writeFileSync, readdirSync, rmSync } from 'node:fs'
+import { readFileSync, writeFileSync, readdirSync, rmSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url))
 const libDir = join(repoRoot, 'lib')
 const home = process.env.HOME ?? ''
-const defaultOut = join(home, '.dsh', 'profiles', 'web', 'plugins')
-const outDir = process.argv[2] || defaultOut
-const isDefaultOut = outDir === defaultOut
+
+// 解析参数:--profile <name> / --profile=<name> 指定 profile;其余位置参数 = outdir。
+let profile = 'web'
+let outDir = null
+for (let i = 2; i < process.argv.length; i++) {
+  const arg = process.argv[i]
+  if (arg === '--profile') {
+    profile = process.argv[++i] ?? 'web'
+    continue
+  }
+  if (arg.startsWith('--profile=')) {
+    profile = arg.slice('--profile='.length)
+    continue
+  }
+  if (!arg.startsWith('--') && outDir === null) outDir = arg
+}
+
+const defaultOut = join(home, '.dsh', 'profiles', profile, 'plugins')
+const resolvedOut = outDir || defaultOut
+const isDefaultOut = outDir === null
 
 // 校验 lib 已构建
 try {
@@ -26,8 +44,11 @@ try {
   process.exit(1)
 }
 
+// 确保输出目录存在(desktop profile 首次迁移时可能还没有 plugins/ 目录)
+mkdirSync(resolvedOut, { recursive: true })
+
 // 计算下一个版本号(基于现有 ds-balance-vN.js)
-const existing = readdirSync(outDir)
+const existing = readdirSync(resolvedOut)
   .filter((f) => /^ds-balance-v\d+\.js$/.test(f))
   .map((f) => parseInt(f.match(/^ds-balance-v(\d+)\.js$/)[1], 10))
 const next = (existing.length > 0 ? Math.max(...existing) : 9) + 1
@@ -43,23 +64,28 @@ const wrapper = [
   "module.exports = require(__libDir + '/index.js')",
 ].join('\n') + '\n'
 
-// 写入新包装文件,清理旧版本
-writeFileSync(join(outDir, name), wrapper)
-for (const f of readdirSync(outDir)) {
-  if (/^ds-balance-v\d+\.js$/.test(f) && f !== name) rmSync(join(outDir, f))
-}
+// 写入新包装文件(先写新 → 更新 patch → 删旧:patch 始终指向存在的文件,HMR 的 unlink 事件时已拿到新名)
+writeFileSync(join(resolvedOut, name), wrapper)
 
-// 更新 patch 行(仅默认输出目录)
+// 更新 patch 行(仅默认输出目录)——先于删旧,避免 patch 短暂指向已删除的旧文件
 if (isDefaultOut) {
-  const patchPath = join(home, '.dsh', 'profiles', 'web', 'cordis.patch.yml')
+  const patchPath = join(home, '.dsh', 'profiles', profile, 'cordis.patch.yml')
   const patch = readFileSync(patchPath, 'utf8')
   const updated = patch.replace(/name: '\.\/plugins\/ds-balance-v\d+\.js'/, `name: './plugins/${name}'`)
   if (updated === patch) {
-    console.error('警告:patch 行未匹配到 ds-balance-vN.js(可能已被手动改名)')
+    console.error('警告:patch 行未匹配到 ds-balance-vN.js(可能已被手动改名或尚未复制)')
   }
   writeFileSync(patchPath, updated)
-  console.log(`已生成 ${join(outDir, name)}`)
+}
+
+// 清理旧版本(最后删)
+for (const f of readdirSync(resolvedOut)) {
+  if (/^ds-balance-v\d+\.js$/.test(f) && f !== name) rmSync(join(resolvedOut, f))
+}
+
+if (isDefaultOut) {
+  console.log(`已生成 ${join(resolvedOut, name)}`)
   console.log(`patch 行 → ./plugins/${name}`)
 } else {
-  console.log(`已生成 ${join(outDir, name)}(测试输出,未更新 patch)`)
+  console.log(`已生成 ${join(resolvedOut, name)}(测试输出,未更新 patch)`)
 }

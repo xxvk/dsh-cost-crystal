@@ -144,15 +144,37 @@
     return seg[seg.length - 1];
   }
 
-  function modelSwitchNext(current, groups) {
-    var all = [];
+  function originClass(sel) {
+    // 按"来源类型"归类:deepseek 官方 vs qwen(视觉),其余按模型名尾段
+    if (sel.provider === 'deepseek-official') return 'deepseek';
+    if (sel.model && sel.model.indexOf('qwen') !== -1) return 'qwen';
+    return sel.model ? sel.model.split('/').pop() : '?';
+  }
+
+  function originLabel(cls) {
+    if (cls === 'deepseek') return 'DeepSeek 官方';
+    if (cls === 'qwen') return 'Qwen 阿里云';
+    return cls;
+  }
+
+  function modelOptions(groups, current) {
+    // 只保留 deepseek 官方 / qwen 两类(每类一项),过滤掉 polyglot 等其它来源。
+    // 当前模型命中某类时,该类的代表模型用 current,避免切换时意外降级(如 v4-pro → v4-flash)。
+    var out = [];
+    var seen = {};
+    var curCls = current ? originClass(current) : null;
     (groups || []).forEach(function (g) {
-      (g.models || []).forEach(function (m) { all.push({ provider: g.id, model: m.id }); });
+      (g.models || []).forEach(function (m) {
+        var cls = originClass({ provider: g.id, model: m.id });
+        if (cls !== 'deepseek' && cls !== 'qwen') return;
+        if (seen[cls]) return;
+        seen[cls] = true;
+        if (curCls === cls) {
+          out.push({ provider: current.provider, model: current.model, cls: cls });
+        } else {
+          out.push({ provider: g.id, model: m.id, cls: cls });
+        }
+      });
     });
-    if (!all.length) return null;
-    var idx = -1;
-    for (var i = 0; i < all.length; i++) {
-      if (all[i].provider === current.provider && all[i].model === current.model) { idx = i; break; }
-    }
-    return all[(idx + 1) % all.length];
+    return out;
   }

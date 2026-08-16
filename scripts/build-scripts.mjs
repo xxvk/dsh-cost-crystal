@@ -4,7 +4,7 @@
 // 反引号、${ 全部由构造保证正确,杜绝手写转义的层层叠加。
 //
 // 用法: node scripts/build-scripts.mjs   (已接入 npm run build)
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 

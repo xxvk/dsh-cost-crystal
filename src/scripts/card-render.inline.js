@@ -42,15 +42,20 @@
       brand.style.animationDuration = pulseDuration(data.activity.tps) + 's';
     }
     head.appendChild(brand);
+    var selWrap = makeEl('span', 'ds-balance-card__modelsel');
     if (data.source && data.source.provider) {
       var src = makeEl('span', 'ds-balance-card__src', sourceLabel(data.source.provider));
       src.title = '模型: ' + (data.source.model || '?');
-      head.appendChild(src);
+      selWrap.appendChild(src);
     }
     var sw = makeEl('span', 'ds-balance-card__switch', '▼');
-    sw.title = '切换模型';
-    sw.onclick = modelSwitch;
-    head.appendChild(sw);
+    sw.title = '选择模型';
+    selWrap.appendChild(sw);
+    selWrap.onclick = function (e) {
+      if (e) e.stopPropagation();
+      openModelMenu(sw);
+    };
+    head.appendChild(selWrap);
     if (data.activity) {
       var tpsOn = data.activity.active;
       var tpsNum = makeEl('span', 'ds-balance-card__tpsnum' + (tpsOn ? ' ds-balance-card__tpsnum--on' : ''), fmtTps(tpsValue(data.activity)));
@@ -126,19 +131,61 @@
   }
 
 
-  function modelSwitch() {
+  function openModelMenu(anchor) {
+    var wasOpen = !!document.querySelector('.ds-balance-card__menu');
+    closeModelMenu();
+    if (wasOpen) return;
     var sid = currentSessionId();
     if (!sid) return;
     fetch('/api/session.models', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'client-request', rpcId: String(Date.now()), method: 'session.models', payload: { sessionId: sid } }) })
       .then(function (r) { return r.json(); })
       .then(function (d) { return d && d.result && d.result.value; })
       .then(function (v) {
-        if (!v || !v.current) return null;
-        var next = modelSwitchNext(v.current, v.groups || []);
-        if (!next) return null;
-        return fetch('/api/session.selectModel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'client-request', rpcId: String(Date.now()), method: 'session.selectModel', payload: { sessionId: sid, provider: next.provider, model: next.model } }) });
+        var opts = modelOptions(v && v.groups, v && v.current);
+        if (!opts.length) return;
+        var menu = makeEl('div', 'ds-balance-card__menu');
+        opts.forEach(function (o) {
+          var item = makeEl('div', 'ds-balance-card__menuitem', originLabel(o.cls));
+          item.title = o.provider + '/' + o.model;
+          if (v.current && originClass(v.current) === o.cls) item.classList.add('ds-balance-card__menuitem--current');
+          item.onclick = function (e) {
+            if (e) e.stopPropagation();
+            selectModel(o.provider, o.model);
+            closeModelMenu();
+          };
+          menu.appendChild(item);
+        });
+        document.body.appendChild(menu);
+        var rect = anchor.getBoundingClientRect();
+        menu.style.top = (rect.bottom + 4) + 'px';
+        menu.style.right = (window.innerWidth - rect.right) + 'px';
+        document.addEventListener('pointerdown', onMenuDocDown, true);
       })
-      .then(function (r) { if (r) return r.json(); })
-      .then(function (d) { if (d && d.result && d.result.ok !== false) poll(); })
+      .catch(function () {});
+  }
+
+  function onMenuDocDown(e) {
+    var menu = document.querySelector('.ds-balance-card__menu');
+    if (!menu) { document.removeEventListener('pointerdown', onMenuDocDown, true); return; }
+    if (menu.contains(e.target)) return;
+    var sel = document.querySelector('.ds-balance-card__modelsel');
+    if (sel && sel.contains(e.target)) return;
+    var sw = document.querySelector('.ds-balance-card__switch');
+    if (sw && sw.contains(e.target)) return;
+    closeModelMenu();
+  }
+
+  function closeModelMenu() {
+    var m = document.querySelector('.ds-balance-card__menu');
+    if (m && m.parentNode) m.parentNode.removeChild(m);
+    document.removeEventListener('pointerdown', onMenuDocDown, true);
+  }
+
+  function selectModel(provider, model) {
+    var sid = currentSessionId();
+    if (!sid) return;
+    fetch('/api/session.selectModel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'client-request', rpcId: String(Date.now()), method: 'session.selectModel', payload: { sessionId: sid, provider: provider, model: model } }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.result && d.result.ok === true) setTimeout(poll, 150); })
       .catch(function () {});
   }

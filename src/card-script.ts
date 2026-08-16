@@ -14,12 +14,18 @@ export const CARD_SCRIPT = `<script>
     '.ds-balance-card:hover{background:rgba(38,41,48,.92);}.ds-balance-card__head{display:flex;align-items:center;gap:6px;opacity:.75;margin-bottom:2px;white-space:nowrap;}.ds-balance-card__dot{width:7px;height:7px;border-radius:50%;background:#4D6BFE;flex:none;}.ds-balance-card__dot--err{background:#f87171;}' +
     '@keyframes dsCardPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(77,107,254,.45);}50%{opacity:.5;box-shadow:0 0 8px 4px rgba(77,107,254,.22);}}.ds-balance-card__dot--active{animation:dsCardPulse 1.5s ease-in-out infinite;}.ds-balance-card--dragging{cursor:grabbing!important;opacity:.85;user-select:none;}' +
     '.ds-balance-card__rate{font-size:11px;font-weight:600;opacity:.9;white-space:nowrap;margin-left:auto;display:none;}.ds-balance-card__rate--on{display:inline;}.ds-balance-card__tpsnum{font-weight:650;}.ds-balance-card__tpsnum--on{color:#4ade80;}.ds-balance-card__models{font-size:10px;opacity:.7;margin-top:4px;text-align:left;letter-spacing:.2px;}.ds-balance-card__forecast{font-size:11px;opacity:.5;margin-top:4px;text-align:left;letter-spacing:.3px;}.ds-balance-card__forecast--on{opacity:.75;}.ds-balance-card__cost{font-weight:650;color:#fff;}' +
-    '.ds-balance-card__time{font-size:9px;font-weight:400;opacity:.4;letter-spacing:.3px;line-height:1;}.ds-balance-card__amt{font-size:17px;font-weight:650;letter-spacing:.2px;}.ds-balance-card__amtlabel{font-size:10.5px;font-weight:400;opacity:.6;letter-spacing:.3px;}.ds-balance-card__src{font-size:10px;opacity:.75;padding:0 5px;border:1px solid rgba(128,128,128,.35);border-radius:999px;white-space:nowrap;}.ds-balance-card__switch{font-size:9px;opacity:.6;cursor:pointer;padding:0 2px;}' +
+    '.ds-balance-card__time{font-size:9px;font-weight:400;opacity:.4;letter-spacing:.3px;line-height:1;}.ds-balance-card__amt{font-size:17px;font-weight:650;letter-spacing:.2px;}.ds-balance-card__amtlabel{font-size:10.5px;font-weight:400;opacity:.6;letter-spacing:.3px;}.ds-balance-card__src{font-size:10px;opacity:.75;padding:0 5px;border:1px solid rgba(128,128,128,.35);border-radius:999px;white-space:nowrap;}.ds-balance-card__switch{font-size:9px;opacity:.6;cursor:pointer;padding:0 2px;}.ds-balance-card__modelsel{display:inline-flex;align-items:center;gap:2px;cursor:pointer;}' +
     '.ds-balance-card__divider{border-top:1px solid rgba(128,128,128,.22);margin-top:6px;}' +
     '.ds-balance-card__brand{background:linear-gradient(90deg,#4D6BFE 0%,#4D6BFE 40%,#C9D6FF 50%,#4D6BFE 60%,#4D6BFE 100%);color:#0000;-webkit-text-fill-color:transparent;background-position:100% 0;background-size:250% 100%;-webkit-background-clip:text;background-clip:text;}.ds-balance-card__brand--active{animation:dsBrandShimmer 1.8s linear infinite;}@keyframes dsBrandShimmer{to{background-position:0 0}}@media (prefers-reduced-motion:reduce){.ds-balance-card__brand--active{background-position:0 0;background-size:100% 100%;animation:none}}' +
-    '.ds-balance-card__period{margin-top:4px;padding-top:4px;border-top:1px solid rgba(128,128,128,.25);display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;white-space:nowrap;}.ds-balance-card__badge{font-size:10.5px;font-weight:650;padding:1px 7px;border-radius:999px;letter-spacing:.3px;}.ds-balance-card__badge--peak{background:rgba(251,146,60,.2);color:#fbbf24;border:1px solid rgba(251,146,60,.45);}.ds-balance-card__badge--offpeak{background:rgba(52,211,153,.16);color:#34d399;border:1px solid rgba(52,211,153,.4);}' +
+    '.ds-balance-card__period{margin-top:4px;padding-top:4px;border-top:1px solid rgba(128,128,128,.25);display:flex;align-items:center;justify-content:flex-start;gap:6px;flex-wrap:wrap;white-space:nowrap;}.ds-balance-card__badge{font-size:10.5px;font-weight:650;padding:1px 7px;border-radius:999px;letter-spacing:.3px;}.ds-balance-card__badge--peak{background:rgba(251,146,60,.2);color:#fbbf24;border:1px solid rgba(251,146,60,.45);}.ds-balance-card__badge--offpeak{background:rgba(52,211,153,.16);color:#34d399;border:1px solid rgba(52,211,153,.4);}' +
     '.ds-balance-card__next{opacity:.8;font-size:11px;}.ds-balance-card__amtrow{display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;}.ds-balance-card__amtcol{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;}.ds-balance-card__usage{font-size:10.5px;font-weight:400;opacity:.72;letter-spacing:.2px;margin-left:auto;}.ds-balance-card__err{color:#fca5a5;font-size:11px;max-width:230px;}' +
-    'body:not([data-ds-dark-theme]) .ds-balance-card{background:rgba(255,255,255,.95);color:#23262f;box-shadow:0 4px 16px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.07);}body:not([data-ds-dark-theme]) .ds-balance-card:hover{background:#fff;}body:not([data-ds-dark-theme]) .ds-balance-card__period{border-top-color:rgba(0,0,0,.12);}body:not([data-ds-dark-theme]) .ds-balance-card__divider{border-top-color:rgba(0,0,0,.12);}body:not([data-ds-dark-theme]) .ds-balance-card__badge--peak{background:rgba(251,146,60,.14);color:#b45309;border-color:rgba(180,83,9,.4);}body:not([data-ds-dark-theme]) .ds-balance-card__badge--offpeak{background:rgba(16,185,129,.12);color:#047857;border-color:rgba(4,120,87,.35);}body:not([data-ds-dark-theme]) .ds-balance-card__err{color:#b91c1c;}body:not([data-ds-dark-theme]) .ds-balance-card__cost{color:#000;}';
+    '.ds-balance-card__menu{position:fixed;z-index:10000;min-width:180px;max-width:260px;box-sizing:border-box;background:rgba(28,30,36,.96);color:#e8eaf0;border:1px solid rgba(128,128,128,.3);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.35);padding:4px;font:12px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}' +
+    '.ds-balance-card__menuitem{font-size:11px;padding:5px 8px;border-radius:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}' +
+    '.ds-balance-card__menuitem:hover{background:rgba(77,107,254,.22);}' +
+    '.ds-balance-card__menuitem--current{color:#4D6BFE;font-weight:600;}' +
+    '.ds-balance-card__menuitem--current::before{content:"✓ ";}' +
+    'body:not([data-ds-dark-theme]) .ds-balance-card{background:rgba(255,255,255,.95);color:#23262f;box-shadow:0 4px 16px rgba(0,0,0,.12);border:1px solid rgba(0,0,0,.07);}body:not([data-ds-dark-theme]) .ds-balance-card:hover{background:#fff;}body:not([data-ds-dark-theme]) .ds-balance-card__period{border-top-color:rgba(0,0,0,.12);}body:not([data-ds-dark-theme]) .ds-balance-card__divider{border-top-color:rgba(0,0,0,.12);}body:not([data-ds-dark-theme]) .ds-balance-card__badge--peak{background:rgba(251,146,60,.14);color:#b45309;border-color:rgba(180,83,9,.4);}body:not([data-ds-dark-theme]) .ds-balance-card__badge--offpeak{background:rgba(16,185,129,.12);color:#047857;border-color:rgba(4,120,87,.35);}body:not([data-ds-dark-theme]) .ds-balance-card__err{color:#b91c1c;}body:not([data-ds-dark-theme]) .ds-balance-card__cost{color:#000;}' +
+    'body:not([data-ds-dark-theme]) .ds-balance-card__menu{background:rgba(255,255,255,.98);color:#23262f;border-color:rgba(0,0,0,.12);}body:not([data-ds-dark-theme]) .ds-balance-card__menuitem:hover{background:rgba(77,107,254,.12);}';
   var styleEl = document.createElement('style');
   styleEl.textContent = STYLE;
   document.head.appendChild(styleEl);
@@ -223,17 +229,39 @@ export const CARD_SCRIPT = `<script>
     return seg[seg.length - 1];
   }
 
-  function modelSwitchNext(current, groups) {
-    var all = [];
+  function originClass(sel) {
+    // 按"来源类型"归类:deepseek 官方 vs qwen(视觉),其余按模型名尾段
+    if (sel.provider === 'deepseek-official') return 'deepseek';
+    if (sel.model && sel.model.indexOf('qwen') !== -1) return 'qwen';
+    return sel.model ? sel.model.split('/').pop() : '?';
+  }
+
+  function originLabel(cls) {
+    if (cls === 'deepseek') return 'DeepSeek 官方';
+    if (cls === 'qwen') return 'Qwen 阿里云';
+    return cls;
+  }
+
+  function modelOptions(groups, current) {
+    // 只保留 deepseek 官方 / qwen 两类(每类一项),过滤掉 polyglot 等其它来源。
+    // 当前模型命中某类时,该类的代表模型用 current,避免切换时意外降级(如 v4-pro → v4-flash)。
+    var out = [];
+    var seen = {};
+    var curCls = current ? originClass(current) : null;
     (groups || []).forEach(function (g) {
-      (g.models || []).forEach(function (m) { all.push({ provider: g.id, model: m.id }); });
+      (g.models || []).forEach(function (m) {
+        var cls = originClass({ provider: g.id, model: m.id });
+        if (cls !== 'deepseek' && cls !== 'qwen') return;
+        if (seen[cls]) return;
+        seen[cls] = true;
+        if (curCls === cls) {
+          out.push({ provider: current.provider, model: current.model, cls: cls });
+        } else {
+          out.push({ provider: g.id, model: m.id, cls: cls });
+        }
+      });
     });
-    if (!all.length) return null;
-    var idx = -1;
-    for (var i = 0; i < all.length; i++) {
-      if (all[i].provider === current.provider && all[i].model === current.model) { idx = i; break; }
-    }
-    return all[(idx + 1) % all.length];
+    return out;
   }
 
     function renderSkeleton() {
@@ -280,15 +308,20 @@ export const CARD_SCRIPT = `<script>
       brand.style.animationDuration = pulseDuration(data.activity.tps) + 's';
     }
     head.appendChild(brand);
+    var selWrap = makeEl('span', 'ds-balance-card__modelsel');
     if (data.source && data.source.provider) {
       var src = makeEl('span', 'ds-balance-card__src', sourceLabel(data.source.provider));
       src.title = '模型: ' + (data.source.model || '?');
-      head.appendChild(src);
+      selWrap.appendChild(src);
     }
     var sw = makeEl('span', 'ds-balance-card__switch', '▼');
-    sw.title = '切换模型';
-    sw.onclick = modelSwitch;
-    head.appendChild(sw);
+    sw.title = '选择模型';
+    selWrap.appendChild(sw);
+    selWrap.onclick = function (e) {
+      if (e) e.stopPropagation();
+      openModelMenu(sw);
+    };
+    head.appendChild(selWrap);
     if (data.activity) {
       var tpsOn = data.activity.active;
       var tpsNum = makeEl('span', 'ds-balance-card__tpsnum' + (tpsOn ? ' ds-balance-card__tpsnum--on' : ''), fmtTps(tpsValue(data.activity)));
@@ -364,20 +397,62 @@ export const CARD_SCRIPT = `<script>
   }
 
 
-  function modelSwitch() {
+  function openModelMenu(anchor) {
+    var wasOpen = !!document.querySelector('.ds-balance-card__menu');
+    closeModelMenu();
+    if (wasOpen) return;
     var sid = currentSessionId();
     if (!sid) return;
     fetch('/api/session.models', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'client-request', rpcId: String(Date.now()), method: 'session.models', payload: { sessionId: sid } }) })
       .then(function (r) { return r.json(); })
       .then(function (d) { return d && d.result && d.result.value; })
       .then(function (v) {
-        if (!v || !v.current) return null;
-        var next = modelSwitchNext(v.current, v.groups || []);
-        if (!next) return null;
-        return fetch('/api/session.selectModel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'client-request', rpcId: String(Date.now()), method: 'session.selectModel', payload: { sessionId: sid, provider: next.provider, model: next.model } }) });
+        var opts = modelOptions(v && v.groups, v && v.current);
+        if (!opts.length) return;
+        var menu = makeEl('div', 'ds-balance-card__menu');
+        opts.forEach(function (o) {
+          var item = makeEl('div', 'ds-balance-card__menuitem', originLabel(o.cls));
+          item.title = o.provider + '/' + o.model;
+          if (v.current && originClass(v.current) === o.cls) item.classList.add('ds-balance-card__menuitem--current');
+          item.onclick = function (e) {
+            if (e) e.stopPropagation();
+            selectModel(o.provider, o.model);
+            closeModelMenu();
+          };
+          menu.appendChild(item);
+        });
+        document.body.appendChild(menu);
+        var rect = anchor.getBoundingClientRect();
+        menu.style.top = (rect.bottom + 4) + 'px';
+        menu.style.right = (window.innerWidth - rect.right) + 'px';
+        document.addEventListener('pointerdown', onMenuDocDown, true);
       })
-      .then(function (r) { if (r) return r.json(); })
-      .then(function (d) { if (d && d.result && d.result.ok !== false) poll(); })
+      .catch(function () {});
+  }
+
+  function onMenuDocDown(e) {
+    var menu = document.querySelector('.ds-balance-card__menu');
+    if (!menu) { document.removeEventListener('pointerdown', onMenuDocDown, true); return; }
+    if (menu.contains(e.target)) return;
+    var sel = document.querySelector('.ds-balance-card__modelsel');
+    if (sel && sel.contains(e.target)) return;
+    var sw = document.querySelector('.ds-balance-card__switch');
+    if (sw && sw.contains(e.target)) return;
+    closeModelMenu();
+  }
+
+  function closeModelMenu() {
+    var m = document.querySelector('.ds-balance-card__menu');
+    if (m && m.parentNode) m.parentNode.removeChild(m);
+    document.removeEventListener('pointerdown', onMenuDocDown, true);
+  }
+
+  function selectModel(provider, model) {
+    var sid = currentSessionId();
+    if (!sid) return;
+    fetch('/api/session.selectModel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'client-request', rpcId: String(Date.now()), method: 'session.selectModel', payload: { sessionId: sid, provider: provider, model: model } }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.result && d.result.ok === true) setTimeout(poll, 150); })
       .catch(function () {});
   }
 
